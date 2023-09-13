@@ -1,0 +1,21 @@
+{
+  "name": "Laribo",
+  "version": "1.1.0-beta",
+  "description": "Converting SVGs to Prusa i3 MK3 compatible Gcode for laser modules",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "svg",
+    "gcode",
+    "prusa",
+    "mk3"
+  ],
+  "author": "Zsolt van den Mar",
+  "license": "CCA-4.0",
+  "devDependencies": {
+    "electron": "~1.6.2",
+    "electron-packager": "^9.1.0"
+  }
+}

@@ -1,0 +1,271 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+
+    <title>Laribo</title>
+
+    <link rel="stylesheet" type="text/css" href="css/foundation.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/icons/foundation-icons.css"/>
+    <link rel="stylesheet" type="text/css" href="css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
+</head>
+
+<body>
+  <!-- DEBUG OUT -->
+  <textarea id="codeOut" class="outOfSight" spellcheck='false'></textarea>
+  <p id="versionInfo" class="version-info num has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="<p></p><img src='./img/laribo-inv.svg' class='logo-wh-sm'/><p class='note-sm text-center no-margin'>Designed and developed by Zsolt van den Már</p><p class='text-center note-sm'><strong class='white'>vandenmar.com/laribo</strong></p>"></p>
+
+  <div class="wrapper grid-container fluid">
+    <div class="grid-x grid-padding-x min-height max-height">
+      <div class="auto cell main-area">
+        <div class="grid-x grid-padding-x align-center-middle text-center max-height">
+          <canvas id="svgCanvas" class="svgCanvas outOfSight"></canvas>
+          <canvas id="simCanvas" class="simCanvas outOfSight"></canvas>
+
+          <div>
+            <output id="errorList" class="outOfSight"></output>
+
+            <canvas id="viewerCanvas" width="1040" height="880"></canvas>
+
+            <div id="slider-vertical" class="outOfSight"></div>
+            <div id="slider-horizontal"></div>
+
+            <!-- <input type="file" id="file" name="files"/> -->
+
+            <!-- <a class="button primary tiny" onclick="loadTest();">TEST</a> -->
+
+          </div>
+
+        </div>
+      </div>
+      <div class="shrink cell side-bar">
+        <div class="grid-container">
+          <div class="grid-x grid-padding-x align-center-middle text-center max-height">
+            <div class="cell">
+              <img class="logo" src="./img/laribo.svg"/>
+            </div>
+
+            <div class="cell">
+              <!-- <p class="text-center no-margin"><strong>SETTINGS</strong></p> -->
+              <hr/>
+              <!-- <div class="switch-container clearfix">
+                <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Allows for a file that doesn't home the Z axis at the beginning of the print. Use only if you already ran a file that had the correct Z height set.">
+                  <p class="no-margin">Skip homing <i class="fi-info tip-icon"></i></p>
+                </span>
+                <div class="switch tiny float-right no-margin">
+                  <input class="switch-input" id="skipZSwitch" type="checkbox"/>
+                  <label class="switch-paddle box-shadow-subtle" for="skipZSwitch"></label>
+                </div>
+              </div> -->
+              <div id="sliderBurnValue" class="switch-container clearfix">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="The amount of power available to the laser module - this is to adjust the intensity of the burns. Lower numbers mean less power, less burn. 255 is 100% power.<br/><br/><em>Default:</em> <strong>255</strong>">
+                      <p class="section-title no-margin">Laser intensity (0-255) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="sliderBurnValueAdjust" class="slider" data-slider data-start="1" data-initial-start="255" data-end="255">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="sliderBurnValueAdjustNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="sliderBurnValueAdjustNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sliderBurnSpeed" class="switch-container clearfix">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="The speed of the laser head when the laser is ON and burning. Higher speeds result in less burn.<br/><br/><em>Default:</em> <strong>300 mm/min</strong>">
+                      <p class="section-title no-margin">Burn speed (mm/min) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="sliderBurnSpeedAdjust" class="slider" data-slider data-start="10" data-initial-start="300" data-end="5000">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="sliderBurnSpeedAdjustNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="sliderBurnSpeedAdjustNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sliderMoveSpeed" class="switch-container clearfix">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Movement speeds, the laser is OFF.<br/><br/><em>Default:</em> <strong>1200 mm/min</strong>">
+                      <p class="section-title no-margin">Movement speed (mm/min) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="sliderMoveSpeedAdjust" class="slider" data-slider data-start="10" data-initial-start="1200" data-end="5000">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="sliderMoveSpeedAdjustNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="sliderMoveSpeedAdjustNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sliderHeight" class="switch-container clearfix">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Distance between the print bed and laser diode. As a rule of thumb, add the thickness of your part to 50mm.<br/><strong>Keep in mind:</strong> the printer homes the Z axis at the beginning of the print — if you have a thicker part the laser diode might crash into it!<br/><br/><em>Default:</em> <strong>50 mm</strong>">
+                      <p class="section-title no-margin">Laser height (mm) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="sliderHeightAdjust" class="slider" data-slider data-start="0" data-initial-start="50" data-end="210">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="sliderHeightAdjustNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="sliderHeightAdjustNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+
+              <div id="sliderResolution" class="switch-container clearfix">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Curves are generated using straight lines. Higher number of divisions means a more accurate, smoother curves — it also means a more heavier file. If your curves already have a lot of points, it's best to set this value as low as possible.<br/><br/><em>Default:</em> <strong>50 divisions</strong>">
+                      <p class="section-title no-margin">Curve resolution (divisions) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="sliderResolutionAdjust" class="slider" data-slider data-start="3" data-initial-start="50" data-end="90">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="sliderResolutionAdjustNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="sliderResolutionAdjustNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+
+              <div class="buffer-10"></div>
+              <div class="buffer-10"></div>
+
+              <div class="switch-container clearfix">
+                <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="<strong>Experimental feature!</strong><br/>When on, the app will generate fill paths on all closed shapes. Open shapes will get automatically closed (evenodd/nonzero). May generate unexpected results.<br/><br/><em>Default:</em> <strong>OFF</strong>">
+                  <p class="no-margin">Fills <i class="fi-alert tip-icon"></i></p>
+                </span>
+                <div class="switch tiny float-right no-margin">
+                  <input class="switch-input" id="fillSwitch" type="checkbox" data-toggle="sliderDiameter"/>
+                  <label class="switch-paddle box-shadow-subtle" for="fillSwitch">
+                    <span class="switch-active switch-label" aria-hidden="true">&nbsp;&nbsp;I&nbsp;</span>
+                    <span class="switch-inactive switch-label" aria-hidden="true">&nbsp;O&nbsp;</span>
+                  </label>
+                </div>
+              </div>
+
+              <div id="sliderDiameter" class="switch-container toggled clearfix" data-toggler=".visible">
+                <div class="grid-x">
+                  <div class="small-12 cell">
+                    <div class="buffer-10"></div>
+                    <span class="float-left no-margin has-tip" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Lower value means a denser fill pattern. Values that are too low, can take a long time to process.<br/><br/><em>Default:</em> <strong>0.5 mm</strong>">
+                      <p class="section-title subitem no-margin">&boxur;&rtrif; Fill pattern density (mm) <i class="fi-info tip-icon"></i></p>
+                    </span>
+                  </div>
+                  <div class="small-9 cell">
+                    <div id="toolDiameterOutput" class="slider" data-slider data-start="0.01" data-initial-start="0.5" data-end="1" data-step="0.01">
+                      <span class="slider-handle" data-slider-handle role="slider" tabindex="1" aria-controls="toolDiameterOutputNum"></span>
+                      <span class="slider-fill" data-slider-fill></span>
+                    </div>
+                  </div>
+                  <div class="small-3 cell">
+                    <input id="toolDiameterOutputNum" class="outputField float-right" type="number"/>
+                  </div>
+                </div>
+              </div>
+              <hr/>
+            </div>
+
+            <div class="cell">
+              <label for="svgUploads">
+                <div class="button utility text-glow" href="#"><i class="fi-plus"></i> Load SVG file</div>
+              </label>
+              <input id="svgUploads" class="hide" name="svgUploads" type="file" onchange="resetLoad();loadFile();" accept=".svg"/>
+            </div>
+
+            <div class="cell">
+              <div id="reloadButton" class="disallowed small button utility-light" href="#" onclick="reloadFile();"><i class="fi-refresh"></i> Reload</div>
+              <div id="clearButton" class="small button light" href="#" onclick="clearAll();"><i class="fi-x"></i> Clear All</div>
+              <div id="saveButton" class="small button black tipnormal" data-tooltip data-allow-html="true" aria-haspopup="true" data-disable-hover="false" title="Save current state (what you see in the preview) to Gcode.<br/><br/><strong>Note:</strong> <em>If you changed any of the settings above you need to press <strong>Reload</strong> to reflect the changes in your saved file</em>" href="#"><i class="fi-download"></i> Save Gcode</div>
+            </div>
+
+            <div class="cell">
+              <p id="printInfo" class="info">Info</p>
+            </div>
+
+            <div id="modalert" class="alertnote hide">
+              <i class="fi-alert"></i> Settings have been changed. To apply them please click the <strong>Reload</strong> button first.
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Dialog -->
+  <div class="reveal" id="progressDialog" data-animation-out="slide-out-down" data-reveal>
+    <div class="progress" role="progressbar" tabindex="0">
+      <span class="progress-meter">
+        <p class="progress-meter-text">0%</p>
+      </span>
+    </div>
+  </div>
+
+  <div class="reveal" id="processingDialog" data-reveal data-options="closeOnClick:false; closeOnEsc:false;">
+    <p class="text-center">Processing...</p>
+  </div>
+
+  <!-- Script loading -->
+
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+  <script type="text/javascript" src="./js/jquery.min.js"></script>
+  <script type="text/javascript" src="./js/jquery-ui.js"></script>
+
+  <!-- APP SCRIPTS -->
+  <script type="text/javascript" src="./js/foundation.min.js"></script>
+  <script type="text/javascript" src="./js/canvg/rgbcolor.js"></script>
+  <script type="text/javascript" src="./js/canvgz.js?v=1.0"></script>
+  <script type="text/javascript" src="./js/canvg/StackBlur.js"></script>
+  <script type="text/javascript" src="./js/gcanvas.js"></script>
+  <script type="text/javascript" src="./js/save.js"></script>
+  <script type="text/javascript" src="./js/app.js"></script>
+
+  <!-- VIEWER SCRIPTS -->
+  <script type="text/javascript" src="js/gcodeviewer/codemirror.js"></script>
+  <script type="text/javascript" src="js/gcodeviewer/ui.js"></script>
+  <script type="text/javascript" src="js/gcodeviewer/gCodeReader.js"></script>
+  <script type="text/javascript" src="js/gcodeviewer/renderer.js"></script>
+  <script> GCODE.ui.initHandlers(); </script>
+
+  <script>if (window.module) module = window.module;</script>
+
+  <!-- /Script loading -->
+</body>
+  <script>
+    require('./renderer.js');
+  </script>
+</html>
