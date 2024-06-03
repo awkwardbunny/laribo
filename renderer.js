@@ -3,4 +3,4 @@
 // All of the Node.js APIs are available in this process.
 var webFrame = require('electron').webFrame;
 webFrame.setVisualZoomLevelLimits(1, 1);
-webFrame.setLayoutZoomLevelLimits(0, 0);
+// webFrame.setLayoutZoomLevelLimits(0, 0);

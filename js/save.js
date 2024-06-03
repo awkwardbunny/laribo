@@ -1,13 +1,12 @@
 'use strict';
 
 const fs = require('fs');
-const {dialog} = require('electron').remote;
+const {dialog} = require('@electron/remote');
 
-document.addEventListener('DOMContentLoaded', function() {
-  var btnSave = document.getElementById('saveButton');
-
-  btnSave.addEventListener('click', function () {
-    if (gCodeOutput == "") {
+document.addEventListener('DOMContentLoaded', () => {
+  const btnSave = document.getElementById('saveButton');
+  btnSave.addEventListener('click', () => {
+    if (gCodeOutput === "") {
       dialog.showMessageBox({
         title: 'Save Gcode',
         message: 'Nothing to save just yet...',
@@ -15,30 +14,26 @@ document.addEventListener('DOMContentLoaded', function() {
         buttons: ['OK']
       });
     } else {
-
       dialog.showSaveDialog({
-          filters: [{
-            name: 'Gcode',
-            extensions: ['gcode']
-          }]
-        },function (filePath) {
-            if (filePath === undefined) { return; }
-          
-            fs.writeFile(filePath, gCodeOutput, function (err) {
-              if (err === undefined || err == null) {
-                dialog.showMessageBox({
-                  title: 'Gcode saved successfully',
-                  message: 'Save completed',
-                  detail: 'Remeber to always wear your safety goggles while the laser is on!',
-                  buttons: ['OK']
-                });
-              } else {
-                dialog.showErrorBox('File save error');
-              }
+        filters: [{
+          name: 'Gcode',
+          extensions: ['gcode']
+        }]
+      }).then((save) => {
+        if (save.canceled) return;
+        fs.writeFile(save.filePath, gCodeOutput, (err) => {
+          if (err === undefined || err == null) {
+            dialog.showMessageBox({
+              title: 'Gcode saved successfully',
+              message: 'Save completed',
+              detail: 'Remeber to always wear your safety goggles while the laser is on!',
+              buttons: ['OK']
             });
+          } else {
+            dialog.showErrorBox('File save error', err.message);
           }
-      );
-      
+        });
+      });
     }
   });
 });

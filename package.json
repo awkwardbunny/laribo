@@ -15,7 +15,10 @@
   "author": "Zsolt van den Mar",
   "license": "CCA-4.0",
   "devDependencies": {
-    "electron": "~1.6.2",
-    "electron-packager": "^9.1.0"
+    "@electron/packager": "^18.3.2"
+  },
+  "dependencies": {
+    "electron": "^30.0.9",
+    "@electron/remote": "^2.1.2"
   }
 }
