@@ -160,24 +160,29 @@ function convert(fn) {
 
   //console.log('Done: JS > GCODE');
 
-  startScript += "M104 S0\n";        // Set extruder temp to 0
-  startScript += "M140 S0\n";        // Set heatbed temp to 0
-  startScript += "G28 W\n"; // Home all axis
-  startScript += "G0 Z"+laserHeight+"\n"; // Z to focused laser
-  startScript += "G0 X0 Y0 F"+moveSpeed+"\n"; // Go to home
-  startScript += "M106 S1\n"          // Laser OFF
-  startScript += "M1\n"            // Pause to let work piece get placed onto bed
+  startScript += ";LARIBO v"+appVersion+"\n";
+  startScript += ";Burn value: "+laserValue+"\n";
+  startScript += ";Burn speed: "+laserSpeed+" mm/min\n";
+  startScript += ";Move speed: "+moveSpeed+" mm/min\n";
+  startScript += ";Laser height: "+laserHeight+" mm\n";
+  startScript += ";Curve resolution: "+interpolationPoints+" divisions\n";
+  startScript += ";Fills allowed: "+fillsAllowed+"\n";
+  if(fillsAllowed) endingScript += ";Fill density: "+toolDiam+" mm\n";
+  startScript += ";\n";
 
-  endingScript += "M106 S1\n";        // Laser OFF
-  endingScript += "G0 Y210 F"+moveSpeed+"\n"; // Move build area to front
-  endingScript += ";LARIBO v"+appVersion+"\n";
-  endingScript += ";Burn value: "+laserValue+"\n";
-  endingScript += ";Burn speed: "+laserSpeed+" mm/min\n";
-  endingScript += ";Move speed: "+moveSpeed+" mm/min\n";
-  endingScript += ";Laser height: "+laserHeight+" mm\n";
-  endingScript += ";Curve resolution: "+interpolationPoints+" divisions\n";
-  endingScript += ";Fills allowed: "+fillsAllowed;
-  if(fillsAllowed) endingScript += "\n;Fill density: "+toolDiam+" mm";
+  startScript += "M104 S0 ; Extruder temp=0\n";
+  startScript += "M140 S0 ; Heatbed  temp=0\n";
+  startScript += "G28 W   ; Home all axis\n";
+  startScript += "G0 X0 Y0 Z100 F"+moveSpeed+" ; Go to home and raise\n";
+  startScript += "M5      ; Laser OFF\n";
+  startScript += "M117 Load\n";
+  startScript += "M1      ; Pause\n" // Pause to let work piece get placed onto bed
+  startScript += "G0 Z"+laserHeight+" ; Go to focused height\n";
+  startScript += "; LAYER:1\n"
+
+  endingScript += "M400   ; Wait for all movements\n";
+  endingScript += "M5     ; Laser OFF\n";
+  endingScript += "G0 X0 Y210 Z100 F"+moveSpeed+"\n"; // Move build area to front
 
   prusifyGcode(gCodeOutput); // Add PRUSA specific mods
   //setTimeout(function(){prusifyGcode(gCodeOutput);}, 500);
@@ -292,7 +297,8 @@ function prusifyGcode (code) {
     if (line.indexOf("G0")==0){
       // Only if X and Y values are present
       if(line.indexOf(" X")!=-1 && line.indexOf(" Y")!=-1) {
-        line = "M106 S1\n" + line; //Add laser off before G0 line
+        line = "M5; Laser OFF\n" + line; //Add laser off before G0 line
+        line = "M400; Wait for all move commands to finish\n" + line
       }
       // Add movement speed to all G0s, unless already defined or has Z (should stay default)
       if(line.indexOf(" F")==-1 && line.indexOf(" Z")==-1) {
@@ -320,7 +326,8 @@ function prusifyGcode (code) {
           line += " P" + alphaOne;
           //Laser power values dependent on element opacity
           if (alphaVal == 0) alphaVal = 1;
-          line = "M106 S"+ alphaVal +"\n" + line; //Laser ON!
+          line = "M3 S"+ alphaVal +"; Laser ON\n" + line; //Laser ON!
+          line = "M400; Wait for all move commands to finish\n" + line
         }
       }
       // Add feed speed
